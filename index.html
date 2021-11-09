@@ -36,8 +36,8 @@ doc.addImage(imgB64, "png", 0, 0, 210, 50);
 // let textLines = doc.splitTextToSize(content, maxLineWidth);
 
 // Drawing margin lines: 
-doc.setDrawColor(255, 255, 255);
-// doc.setDrawColor(0, 0, 0);
+// doc.setDrawColor(255, 255, 255);
+doc.setDrawColor(0, 0, 0);
 doc.line(margin, margin, margin + maxLineWidth, margin, 'F');
 doc.line(margin, margin, margin, pageHeight - margin, 'F');
 doc.line(margin+maxLineWidth, margin, margin+maxLineWidth, pageHeight - margin, 'F');
@@ -51,12 +51,14 @@ let paragraphSize  = 11;
 doc.headerSpacings = {title: 8, subtitle: 6, paragraph: 2};
 let initialPos     = 70  // First position of the text
 let posPointer     = initialPos;
+let previousPagePointer = posPointer;
 
 setText("title", "ANTECEDENTES");
 
 let text2 = "PERULINUX SAC es una consultora de sistemas dedicada a brindar servicios en Software Libre para instituciones públicas y privadas, nos caracterizamos por ser una consultora independiente, que busca las mejores soluciones para su entorno, analizando las necesidades que su negocio y sus clientes necesitan.";
-setText("subtitle", "Visión del producto o servicio:*");
-setText("paragraph", "Por completar");
+
+setText("subtitle", "Visión del producto o servicio:");
+setText("paragraph", text2);
 
 setText("subtitle", "Misión del producto o servicio:");
 setText("paragraph", text2);
@@ -71,7 +73,7 @@ setText("subtitle", "Marca comercial o nombre completo");
 setText("paragraph", "PERULINUX SAC\nPERULINUX NG SAC");
 
 setText("subtitle", "Producto o servicio");
-setText("paragraph", "Plataforma PeruLinux");
+setText("paragraph", text2 + "Ademas, decir que esto es una prueba que deberia de rellenar un linea adicional mas.Pero sigamos agregando mas lineas de codigo, para asi poder llegar a desbordar el.");
 
 setLogo(18);
 
@@ -84,15 +86,24 @@ function setLogo(r) {
 
 function setText(textLevel, text) {
   setTextLevel(textLevel);
-  let textArray = doc.splitTextToSize(text, maxLineWidth);
+  let textArray     = doc.splitTextToSize(text, maxLineWidth);
+  let textHeight    = calcTextHeight(text, textLevel, textArray.length);
+  let oneLineHeight = textHeight / textArray.length;
+
 
   // if it's the first line, don't add the space:
   if(posPointer != initialPos)
     posPointer += doc.headerSpacings[textLevel];
 
-  doc.text(textArray, margin, posPointer);
-
-  posPointer += calcTextHeight(text, textLevel, textArray.length);
+  // if the text still fits between the margins:
+  if((posPointer + textHeight) - oneLineHeight <= pageHeight - margin) {
+    doc.text(textArray, margin, posPointer);
+    posPointer += textHeight;
+  } else {
+    doc.addPage();
+    posPointer = initialPos;
+    doc.text(textArray, margin, posPointer);
+  }
 }
 
 function setTextLevel(textLevel) {
