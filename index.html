@@ -72,23 +72,64 @@ setText("paragraph", "20507334165\n20600735668");
 setText("subtitle", "Marca comercial o nombre completo");
 setText("paragraph", "PERULINUX SAC\nPERULINUX NG SAC");
 
-setText("subtitle", "Producto o servicio");
-setText("paragraph", text2 + "Ademas, decir que esto es una prueba que deberia de rellenar un linea adicional mas.Pero sigamos agregando mas lineas de codigo, para asi poder llegar a desbordar el.");
+// let text3 = text2 + "Ademas, decir que esto es una prueba que deberia de rellenar un linea adicional mas.Pero sigamos agregando mas lineas de codigo."
 
-setLogo(18);
+// let text3lines = doc.splitTextToSize(text3, maxLineWidth);
+
+setGroupedText({title: "MEDIOS DE COMUNICACION", subtitle: "Producto o servicio", paragraph: "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh."});
+
+// setLogo(18);
 
 
 
 function setLogo(r) {
   doc.setFillColor(0, 0, 0);
-  doc.circle(margin+maxLineWidth-r, posPointer - r - calcTextHeight("", paragraphSize, 1), r, "F");
+  doc.circle(margin+maxLineWidth-r, posPointer - r - calcTextHeight(paragraphSize, 1), r, "F");
+}
+
+function setGroupedText(texts) {
+  let fits = false;
+  let tmpPointer = posPointer;
+
+  // evaluating if the grouped text fit between the margins:
+  for(prop in texts) {
+    let wrappedText = doc.splitTextToSize(texts[prop], maxLineWidth);
+    let textHeight  = calcTextHeight(prop, wrappedText.length);
+    let oneLineHeight = textHeight / wrappedText.length;
+
+    // if it's the first line, wouldn't add the space:
+    if(tmpPointer != initialPos)
+      tmpPointer += doc.headerSpacings[prop];
+
+    if(itFits(tmpPointer, textHeight, wrappedText.length)) {
+      fits = true;
+      tmpPointer += textHeight;
+
+    } else {
+      fits = false;
+      break;
+    }
+  }
+
+  console.log("all of them fits?: " + fits);
+  
+  if(fits) {
+    for(prop in texts)
+      setText(prop, texts[prop]);
+
+  } else {
+    posPointer = initialPos;
+    doc.addPage();
+
+    for(prop in texts)
+      setText(prop, texts[prop]);
+  }
 }
 
 function setText(textLevel, text) {
   setTextLevel(textLevel);
   let textArray     = doc.splitTextToSize(text, maxLineWidth);
-  let textHeight    = calcTextHeight(text, textLevel, textArray.length);
-  let oneLineHeight = textHeight / textArray.length;
+  let textHeight    = calcTextHeight(textLevel, textArray.length);
 
 
   // if it's the first line, don't add the space:
@@ -96,14 +137,21 @@ function setText(textLevel, text) {
     posPointer += doc.headerSpacings[textLevel];
 
   // if the text still fits between the margins:
-  if((posPointer + textHeight) - oneLineHeight <= pageHeight - margin) {
+  if(itFits(posPointer, textHeight, textArray.length)) {
     doc.text(textArray, margin, posPointer);
     posPointer += textHeight;
   } else {
     doc.addPage();
     posPointer = initialPos;
     doc.text(textArray, margin, posPointer);
+    posPointer += textHeight;
   }
+}
+
+function itFits(pointer, textHeight, lines) {
+  let oneLineHeight = textHeight / lines;
+
+  return ((pointer + textHeight) - oneLineHeight <= pageHeight - margin) ? true : false;
 }
 
 function setTextLevel(textLevel) {
@@ -121,7 +169,7 @@ function setTextLevel(textLevel) {
   }
 }
 
-function calcTextHeight(text, fontSize, textLength=null) {
+function calcTextHeight(fontSize, textLength) {
   if(typeof(fontSize) === "string") {
     switch(fontSize) {
       case "title":
@@ -138,11 +186,7 @@ function calcTextHeight(text, fontSize, textLength=null) {
     }
   }
 
-  if(textLength == null) {
-    text = doc.splitTextToSize(text, maxLineWidth);
-    return (text.length * fontSize * lineHeightFactor) / dpmm;
-  } else
-    return (textLength * fontSize * lineHeightFactor) / dpmm;
+  return (textLength * fontSize * lineHeightFactor) / dpmm;
 }
 
 
