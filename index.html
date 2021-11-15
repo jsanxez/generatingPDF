@@ -16,9 +16,6 @@
   <button onclick="downloadPdf()">Descargar PDF</button> 
 
 <script>
-
-// let content = document.getElementById("parrafo1").innerText;
-
 let pageWidth        = 210;
 let pageHeight       = 297;
 let lineHeightFactor = 1.5;
@@ -39,56 +36,46 @@ jsPDF.API.addNewPage      = function(format, orientation) {
 
 const doc = new jsPDF({orientation: "portrait", unit: "mm", lineHeight: lineHeightFactor});
 
-// Drawing margin lines: 
-// doc.setDrawColor(255, 255, 255);
-doc.setDrawColor(0, 0, 0);
-doc.line(margin, margin, margin + maxLineWidth, margin, 'F');
-doc.line(margin, margin, margin, pageHeight - margin, 'F');
-doc.line(margin+maxLineWidth, margin, margin+maxLineWidth, pageHeight - margin, 'F');
-doc.line(margin, pageHeight-margin, margin + maxLineWidth, pageHeight-margin, 'F');
-
 // Adding the text:
 let titleSize           = 18;
 let subtitleSize        = 12;
 let paragraphSize       = 11;
-doc.headerSpacings      = {title: 8, subtitle: 6, paragraph: 2};
+doc.headerSpacings      = {title: 14, subtitle: 4, paragraph: 2};
 doc.headerImages        = ["header1.png", "header2.png", "header3.png", "header4.png"];
 let initialPos          = 70  // First position of the text
 let posPointer          = initialPos;
 let previousPagePointer = posPointer;
 
 
-setText("title", "ANTECEDENTES");
+setGroupedText({title: "ANTECEDENTES", subtitle: "Vision del producto o servicio", paragraph: "PERULINUX SAC es una consultora de sistemas dedicada a brindar servicios en Software Libre para instituciones públicas y privadas, nos caracterizamos por ser una consultora independiente, que busca las mejores soluciones para su entorno, analizando las necesidades que su negocio y sus clientes necesitan."});
+setGroupedText({subtitle: "Misión del producto o servicio:", paragraph: "por completar"});
+setGroupedText({subtitle: "Correo electronico", paragraph: "jsanchez@gmail.com\njsanchez2@gmail.com"});
+setGroupedText({subtitle: "RUC o DNI", paragraph: "20507334165\n20600735668"});
+setGroupedText({subtitle: "Marca comercial o nombre completo", paragraph: "PERULINUX SAC\nPERULINUX NG SAC"});
+setGroupedText({subtitle: "Producto o servicio", paragraph: "Peru linux"});
 
-let text2 = "PERULINUX SAC es una consultora de sistemas dedicada a brindar servicios en Software Libre para instituciones públicas y privadas, nos caracterizamos por ser una consultora independiente, que busca las mejores soluciones para su entorno, analizando las necesidades que su negocio y sus clientes necesitan.";
+setGroupedText({title: "PRODUCTOS Y SERVICIOS", subtitle: "Concepto de negocio", paragraph: "Soluciones IT cloud computing."});
+setGroupedText({subtitle: "Competencia", paragraph: "cloudperu.pe\nosenterprise.com.pe (nube con productos de redhat"});
+setGroupedText({subtitle: "Valores de marca", paragraph: "Valores: investigadora, experimentada, tecnologica, habil y con vocacion de servicio."});
+setGroupedText({subtitle: "Oferta de valor", paragraph: "- Equipo tecnico que realiza buena planificacion y realiza un trabajo muy especializado.  - Una de las primeras empresas que brinda soluciones Open Source (2008) - Mentoring a estudiantes que quieren desarrollarse en el campo de las soluciones basadas en linux y software libre."});
+setGroupedText({subtitle: "Descripcion del producto o servicio", paragraph: "Contamos con divisiones de negocio IT que incluye soluciones IP a traves de asterisk, Soluciones de correo electronico empresarial sobre ZIMBRA, soluciones de seguridad sobre Endian (firewall, proxy, VPN, IDS, antispam, antivirus, traffic shapping), soluciones de documentacion empresarial con Alfresco, almacenamiento de archivos sobre linux, venta de hardware y software en general, networking, soport Linux y mucho mas."});
 
-setText("subtitle", "Visión del producto o servicio:");
-setText("paragraph", text2);
+setGroupedText({title: "OBJETIVOS DEL PROYECTO DE BRANDING", subtitle: "Que sabemos de nuestro publico objetivo que nos pueda ayudar?", paragraph: "Que usan motores de busqueda para buscar soluciones, llenan formularios y llaman al telefono que salen en la web, por lo general lo realiza el jefe de sistemas."});
+setGroupedText({subtitle: "Cual es el objetivo de la comunicacion de este proyecto", paragraph: "Actualizar la plataforma y adquirir una identidad visual y ser una marca escalable en multidispositivos."});
+setGroupedText({subtitle: "Que es lo que necesito comunicar con mayor prioridad", paragraph: "Actualizar la plataforma y adquirir una identidad visual global y ser una marca escalable en multidispositivos. Actualizar los nuevos beneficios de los prodyctos y servicios y mejorar la experiencia de usuario."})
+setGroupedText({subtitle: "Cual es el publico objetivo", paragraph: "Pequenas empresas (de 10 a 4000 trabajadores) instituto nacional de salud, jefes de sistemas envia el requerimiento.Jefe de Logistica (Entidades del estado por los temas de corrupcion)"});
+setGroupedText({subtitle: "Cual es el objetivo de negocio?", paragraph: "Actualizar los beneficios de los servicios y productos\nContar con showroom las 24 horas y armas combos y precontizacion."});
 
-setText("subtitle", "Misión del producto o servicio:");
-setText("paragraph", text2);
+setGroupedText({title: "TONO DE COMUNICACION",subtitle: "Que comportamiento deseamos de nuestro publico objetivo como resultado de esta estrategia de comunicacion?", paragraph: "Que organicen sus combos de servicios cloud y puedan descargar sus caracteristicas."});
+setGroupedText({subtitle: "Cual es el tono y estilo de comunicaion que se ajusta mejor con los objetivos de la marca?", paragraph: "Comunicacion cercana y experimentada."});
+setGroupedText({subtitle: "Cual es la personalidad de la marca", paragraph: "Nos gusta lo que hacemos, vocacion de servicio y tecnologicos."});
 
-setText("subtitle", "Correo electrónico");
-setText("paragraph", "jsanchez@gmail.com\njsanchez2@gmail.com");
-
-setText("subtitle", "RUC o DNI");
-setText("paragraph", "20507334165\n20600735668");
-
-setText("subtitle", "Marca comercial o nombre completo");
-setText("paragraph", "PERULINUX SAC\nPERULINUX NG SAC");
-
-
-// setText("title", "MEDIOS DE COMUNICACION");
-// setText("subtitle", "Producto o servicio");
-// setText("paragraph", "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh.");
-setGroupedText({title: "MEDIOS DE COMUNICACION 2", subtitle: "Producto o servicio", paragraph: "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh."});
-
-// setLogo(18);
-doc.addNewPage();
-setText("title", "MEDIOS DE COMUNICACION");
-setText("subtitle", "Producto o servicio");
-setText("paragraph", "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh.");
-
+setGroupedText({title: "CANALES DE CONTACTO", subtitle: "Referencias personales:", paragraph: "rehat.com"});
+setGroupedText({subtitle: "Referencias de la competencia directa:", paragraph: "cloudperu.pe\nosenterprise.com.pe"});
+setGroupedText({subtitle: "Necesitas reportes de tus sitios web:", paragraph: "Si"});
+setGroupedText({subtitle: "Deseas informacion de registro de marca en indecopi?", paragraph: "Si"});
+setGroupedText({subtitle: "Cuantas personas estaran dedicadas a la gestion de su marca en el proyecto?", paragraph: "por completar"});
+setGroupedText({subtitle: "Cuales son los medios tradicionales y digitales que mas consume nuestro publico objetivo?", paragraph: "redes sociales, compras online, compras fisicas, venta por whatsapp.etc."});
 
 
 function setLogo(r) {
