@@ -26,17 +26,15 @@ let dpmm             = 2.834646;      // 72 dpi
 let fontSize         = 12;     // set in pts 1pt = 0.3528mm
 let margin           = 25.4;   // 2.54 cm = 1in
 let maxLineWidth     = (pageWidth - margin * 2) + 10;
-let headerImages        = ["header1.png", "header2.png", "header3.png", "header4.png"];
 
-jsPDF.API.page            = 1;
-// Setting spacings of the types of text (not only headers):
+jsPDF.API.page            = 0;
 jsPDF.API.headerSpacings  = {title: 0, subtitle: 0, paragraph: 0};
+jsPDF.API.headerImages    = [];
 jsPDF.API.addNewPage      = function(format, orientation) {
   this.addPage(format, orientation);
+  posPointer = initialPos;
   this.page++;
-  let counter = this.page % 4;
-
-  setPageHeader(headerImages[counter]);
+  setPageHeaders(this.headerImages);
 };
 
 const doc = new jsPDF({orientation: "portrait", unit: "mm", lineHeight: lineHeightFactor});
@@ -50,16 +48,15 @@ doc.line(margin+maxLineWidth, margin, margin+maxLineWidth, pageHeight - margin, 
 doc.line(margin, pageHeight-margin, margin + maxLineWidth, pageHeight-margin, 'F');
 
 // Adding the text:
-// doc.text(textLines, margin, margin + oneLineHeight);
 let titleSize           = 18;
 let subtitleSize        = 12;
 let paragraphSize       = 11;
 doc.headerSpacings      = {title: 8, subtitle: 6, paragraph: 2};
+doc.headerImages        = ["header1.png", "header2.png", "header3.png", "header4.png"];
 let initialPos          = 70  // First position of the text
 let posPointer          = initialPos;
 let previousPagePointer = posPointer;
 
-setPageHeader(headerImages[doc.page % 4], "PNG");
 
 setText("title", "ANTECEDENTES");
 
@@ -81,9 +78,16 @@ setText("subtitle", "Marca comercial o nombre completo");
 setText("paragraph", "PERULINUX SAC\nPERULINUX NG SAC");
 
 
-setGroupedText({title: "MEDIOS DE COMUNICACION", subtitle: "Producto o servicio", paragraph: "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh."});
+// setText("title", "MEDIOS DE COMUNICACION");
+// setText("subtitle", "Producto o servicio");
+// setText("paragraph", "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh.");
+setGroupedText({title: "MEDIOS DE COMUNICACION 2", subtitle: "Producto o servicio", paragraph: "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh."});
 
 // setLogo(18);
+doc.addNewPage();
+setText("title", "MEDIOS DE COMUNICACION");
+setText("subtitle", "Producto o servicio");
+setText("paragraph", "Otro parrafo cortito pero al que se le puede agregar mas texto para poder desbordar nuevamente la pagina jeje, seguimos sin poder desbordarla, ahora agreguemos mas texto de lo que se tenia vete a la versh.");
 
 
 
@@ -92,9 +96,28 @@ function setLogo(r) {
   doc.circle(margin+maxLineWidth-r, posPointer - r - calcTextHeight(paragraphSize, 1), r, "F");
 }
 
-function setPageHeader(imgPath, type="") {
+function setPageHeaders(imgPaths) {
+  let actualPage = doc.page + 1;
+  let i = doc.page % 4;
+
+  // set first page header once:
+  if(actualPage == 2) {
+    setPageHeader(imgPaths[0], 'PNG', 1);
+  }
+
+  setPageHeader(imgPaths[i], 'PNG', actualPage);
+}
+
+function setPageHeader(imgpath, type='', page=doc.page+1) {
+  if(imgpath == undefined) {
+    throw TypeError("At least 1 argument required");
+    return;
+  }
+
   let img = new Image();
-  img.src = imgPath;
+
+  img.src = imgpath;
+  doc.setPage(page)
   doc.addImage(img, type, 0, 0, 210, 50);
 }
 
@@ -102,13 +125,13 @@ function setGroupedText(texts) {
   let fits = false;
   let tmpPointer = posPointer;
 
-  // evaluating if the grouped text fit between the margins:
+  // evaluating whether the grouped text fits between the margins:
   for(prop in texts) {
     let wrappedText = doc.splitTextToSize(texts[prop], maxLineWidth);
     let textHeight  = calcTextHeight(prop, wrappedText.length);
     let oneLineHeight = textHeight / wrappedText.length;
 
-    // if it's the first line, wouldn't add the space:
+    // if it's the first line, don't add the space:
     if(tmpPointer != initialPos)
       tmpPointer += doc.headerSpacings[prop];
 
@@ -127,7 +150,6 @@ function setGroupedText(texts) {
       setText(prop, texts[prop]);
 
   } else {
-    posPointer = initialPos;
     doc.addNewPage();
 
     for(prop in texts)
@@ -151,7 +173,6 @@ function setText(textLevel, text) {
     posPointer += textHeight;
   } else {
     doc.addNewPage();
-    posPointer = initialPos;
     doc.text(textArray, margin, posPointer);
     posPointer += textHeight;
   }
