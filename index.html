@@ -13,6 +13,8 @@
  
 <body> 
 
+  <h2>Vision: </h2>
+  <textarea name="vision" id="vision" cols="30" rows="10"></textarea><br>
   <button onclick="downloadPdf()">Descargar PDF</button> 
 
 <script>
@@ -24,96 +26,56 @@ let lineHeightFactor = 1.5;
 let dpmm             = 2.834646;      // 72 dpi
 let margin           = 25.4;   // 2.54 cm = 1in
 let maxLineWidth     = (pageWidth - margin * 2) + 10;
+let initialPos          = 70  // First position of the text
+
 // Adding new properties:
-jsPDF.API.page            = 0;
-jsPDF.API.headerSpacings  = {title: 0, subtitle: 0, paragraph: 0};
-jsPDF.API.headerImages    = [];
-jsPDF.API.addNewPage      = function(format, orientation) {
+jsPDF.API.posPointer     = 0;
+jsPDF.API.page           = 0;
+let fontSizes            = {title: 18, subtitle: 12, paragraph: 11};   // Set in pts, 1pt = 0.3528 mm
+jsPDF.API.headerSpacings = {title: 0, subtitle: 0, paragraph: 0};
+jsPDF.API.headerImages   = [];
+
+// Functions:
+jsPDF.API.addNewPage     = function(format, orientation) {
   this.addPage(format, orientation);
-  posPointer = initialPos;
+  this.posPointer = initialPos;
   this.page++;
-  setPageHeaders(this.headerImages);
+  this.setPageHeaders(this.headerImages);
 };
 
-const doc = new jsPDF({orientation: "portrait", unit: "mm", lineHeight: lineHeightFactor});
-
-// Setting document content properties:
-let fontSizes           = {title: 18, subtitle: 12, paragraph: 11};   // Set in pts, 1pt = 0.3528 mm
-doc.headerSpacings      = {title: 14, subtitle: 4, paragraph: 2};
-doc.headerImages        = ["header1.png", "header2.png", "header3.png", "header4.png"];
-let initialPos          = 70  // First position of the text
-let posPointer          = initialPos;
-
-
-let fields = [
-  {title: "ANTECEDENTES", subtitle: "Vision del producto o servicio", paragraph: "PERULINUX SAC es una consultora de sistemas dedicada a brindar servicios en Software Libre para instituciones públicas y privadas, nos caracterizamos por ser una consultora independiente, que busca las mejores soluciones para su entorno, analizando las necesidades que su negocio y sus clientes necesitan."},
-  {subtitle: "Misión del producto o servicio:", paragraph: "por completar"},
-  {subtitle: "Correo electronico", paragraph: "jsanchez@gmail.com\njsanchez2@gmail.com"},
-  {subtitle: "RUC o DNI", paragraph: "20507334165\n20600735668"},
-  {subtitle: "Marca comercial o nombre completo", paragraph: "PERULINUX SAC\nPERULINUX NG SAC"},
-  {subtitle: "Producto o servicio", paragraph: "Peru linux"},
-  {title: "PRODUCTOS Y SERVICIOS", subtitle: "Concepto de negocio", paragraph: "Soluciones IT cloud computing."},
-  {subtitle: "Competencia", paragraph: "cloudperu.pe\nosenterprise.com.pe (nube con productos de redhat"},
-  {subtitle: "Valores de marca", paragraph: "Valores: investigadora, experimentada, tecnologica, habil y con vocacion de servicio."},
-  {subtitle: "Oferta de valor", paragraph: "- Equipo tecnico que realiza buena planificacion y realiza un trabajo muy especializado.  - Una de las primeras empresas que brinda soluciones Open Source (2008) - Mentoring a estudiantes que quieren desarrollarse en el campo de las soluciones basadas en linux y software libre."},
-  {subtitle: "Descripcion del producto o servicio", paragraph: "Contamos con divisiones de negocio IT que incluye soluciones IP a traves de asterisk, Soluciones de correo electronico empresarial sobre ZIMBRA, soluciones de seguridad sobre Endian (firewall, proxy, VPN, IDS, antispam, antivirus, traffic shapping), soluciones de documentacion empresarial con Alfresco, almacenamiento de archivos sobre linux, venta de hardware y software en general, networking, soport Linux y mucho mas."},
-  {title: "OBJETIVOS DEL PROYECTO DE BRANDING", subtitle: "Que sabemos de nuestro publico objetivo que nos pueda ayudar?", paragraph: "Que usan motores de busqueda para buscar soluciones, llenan formularios y llaman al telefono que salen en la web, por lo general lo realiza el jefe de sistemas."},
-  {subtitle: "Cual es el objetivo de la comunicacion de este proyecto", paragraph: "Actualizar la plataforma y adquirir una identidad visual y ser una marca escalable en multidispositivos."},
-  {subtitle: "Que es lo que necesito comunicar con mayor prioridad", paragraph: "Actualizar la plataforma y adquirir una identidad visual global y ser una marca escalable en multidispositivos. Actualizar los nuevos beneficios de los prodyctos y servicios y mejorar la experiencia de usuario."},
-  {subtitle: "Cual es el publico objetivo", paragraph: "Pequenas empresas (de 10 a 4000 trabajadores) instituto nacional de salud, jefes de sistemas envia el requerimiento.Jefe de Logistica (Entidades del estado por los temas de corrupcion)"},
-  {subtitle: "Cual es el objetivo de negocio?", paragraph: "Actualizar los beneficios de los servicios y productos\nContar con showroom las 24 horas y armas combos y precontizacion."},
-  {title: "TONO DE COMUNICACION",subtitle: "Que comportamiento deseamos de nuestro publico objetivo como resultado de esta estrategia de comunicacion?", paragraph: "Que organicen sus combos de servicios cloud y puedan descargar sus caracteristicas."},
-  {subtitle: "Cual es el tono y estilo de comunicaion que se ajusta mejor con los objetivos de la marca?", paragraph: "Comunicacion cercana y experimentada."},
-  {subtitle: "Cual es la personalidad de la marca", paragraph: "Nos gusta lo que hacemos, vocacion de servicio y tecnologicos."},
-  {title: "CANALES DE CONTACTO", subtitle: "Referencias personales:", paragraph: "rehat.com"},
-  {subtitle: "Referencias de la competencia directa:", paragraph: "cloudperu.pe\nosenterprise.com.pe"},
-  {subtitle: "Necesitas reportes de tus sitios web:", paragraph: "Si"},
-  {subtitle: "Deseas informacion de registro de marca en indecopi?", paragraph: "Si"},
-  {subtitle: "Cuantas personas estaran dedicadas a la gestion de su marca en el proyecto?", paragraph: "por completar"},
-  {subtitle: "Cuales son los medios tradicionales y digitales que mas consume nuestro publico objetivo?", paragraph: "redes sociales, compras online, compras fisicas, venta por whatsapp.etc."},
-];
-
-
-// Adding the text:
-for(field of fields) {
-  setGroupedText(field);
-}
-
-
-function setText(textLevel, text) {
-  setTextLevel(textLevel);
-  let textArray     = doc.splitTextToSize(text, maxLineWidth);
+jsPDF.API.setText = function(textLevel, text) {
+  this.setTextLevel(textLevel);
+  let textArray     = this.splitTextToSize(text, maxLineWidth);
   let textHeight    = calcTextHeight(textLevel, textArray.length);
 
-
   // if it's the first line, don't add the space:
-  if(posPointer != initialPos)
-    posPointer += doc.headerSpacings[textLevel];
+  if(this.posPointer != initialPos)
+    this.posPointer += this.headerSpacings[textLevel];
 
   // if the text still fits between the margins:
-  if(itFits(posPointer, textHeight, textArray.length)) {
-    doc.text(textArray, margin, posPointer);
-    posPointer += textHeight;
+  if(itFits(this.posPointer, textHeight, textArray.length)) {
+    this.text(textArray, margin, this.posPointer);
+    this.posPointer += textHeight;
   } else {
-    doc.addNewPage();
-    doc.text(textArray, margin, posPointer);
-    posPointer += textHeight;
+    this.addNewPage();
+    this.text(textArray, margin, this.posPointer);
+    this.posPointer += textHeight;
   }
 }
 
-function setGroupedText(texts) {
+jsPDF.API.setGroupedText = function(texts) {
   let fits = false;
-  let tmpPointer = posPointer;
+  let tmpPointer = this.posPointer;
 
   // evaluating whether the grouped text fits between the margins:
   for(prop in texts) {
-    let wrappedText = doc.splitTextToSize(texts[prop], maxLineWidth);
+    let wrappedText = this.splitTextToSize(texts[prop], maxLineWidth);
     let textHeight  = calcTextHeight(prop, wrappedText.length);
     let oneLineHeight = textHeight / wrappedText.length;
 
     // if it's the first line, don't add the space:
     if(tmpPointer != initialPos)
-      tmpPointer += doc.headerSpacings[prop];
+      tmpPointer += this.headerSpacings[prop];
 
     if(itFits(tmpPointer, textHeight, wrappedText.length)) {
       fits = true;
@@ -127,17 +89,17 @@ function setGroupedText(texts) {
 
   if(fits) {
     for(prop in texts)
-      setText(prop, texts[prop]);
+      this.setText(prop, texts[prop]);
 
   } else {
-    doc.addNewPage();
+    this.addNewPage();
 
     for(prop in texts)
-      setText(prop, texts[prop]);
+      this.setText(prop, texts[prop]);
   }
 }
 
-function setPageHeader(imgpath, type='', page=doc.page+1) {
+jsPDF.API.setPageHeader = function(imgpath, type='', page=this.page+1) {
   if(imgpath == undefined) {
     throw TypeError("At least 1 argument required");
     return;
@@ -146,25 +108,25 @@ function setPageHeader(imgpath, type='', page=doc.page+1) {
   let img = new Image();
 
   img.src = imgpath;
-  doc.setPage(page)
-  doc.addImage(img, type, 0, 0, 210, 50);
+  this.setPage(page)
+  this.addImage(img, type, 0, 0, 210, 50);
 }
 
-function setPageHeaders(imgPaths) {
-  let actualPage = doc.page + 1;
-  let i = doc.page % 4;
+jsPDF.API.setPageHeaders = function (imgPaths) {
+  let actualPage = this.page + 1;
+  let i = this.page % 4;
 
   // set first page header once:
   if(actualPage == 2) {
-    setPageHeader(imgPaths[0], 'PNG', 1);
+    this.setPageHeader(imgPaths[0], 'PNG', 1);
   }
 
-  setPageHeader(imgPaths[i], 'PNG', actualPage);
+  this.setPageHeader(imgPaths[i], 'PNG', actualPage);
 }
 
-function setLogo(r) {
-  doc.setFillColor(0, 0, 0);
-  doc.circle(margin+maxLineWidth-r, posPointer - r - calcTextHeight(fontSizes["paragraph"], 1), r, "F");
+jsPDF.API.setLogo = function (r) {
+  this.setFillColor(0, 0, 0);
+  this.circle(margin+maxLineWidth-r, this.posPointer - r - calcTextHeight(fontSizes["paragraph"], 1), r, "F");
 }
 
 
@@ -175,18 +137,18 @@ function itFits(pointer, textHeight, lines) {
   return ((pointer + textHeight) - oneLineHeight <= pageHeight - margin) ? true : false;
 }
 
-function setTextLevel(textLevel) {
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(0, 0, 0);
+jsPDF.API.setTextLevel = function (textLevel) {
+  this.setFont("helvetica", "bold");
+  this.setTextColor(0, 0, 0);
   
   if(textLevel == "title")
-    doc.setFontSize(fontSizes[textLevel]);
+    this.setFontSize(fontSizes[textLevel]);
   else if(textLevel == "subtitle")
-    doc.setFontSize(fontSizes[textLevel]);
+    this.setFontSize(fontSizes[textLevel]);
   else if(textLevel == "paragraph") {
-    doc.setFontSize(fontSizes[textLevel]);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(106, 104, 104);
+    this.setFontSize(fontSizes[textLevel]);
+    this.setFont("helvetica", "normal");
+    this.setTextColor(106, 104, 104);
   }
 }
 
@@ -212,6 +174,48 @@ function calcTextHeight(fontSize, textLength) {
 
 
 function downloadPdf() {
+  const doc = new jsPDF({orientation: "portrait", unit: "mm", lineHeight: lineHeightFactor});
+
+  // Setting document content properties:
+  doc.posPointer     = initialPos;
+  doc.headerSpacings = {title: 14, subtitle: 4, paragraph: 2};
+  doc.headerImages   = ["header1.png", "header2.png", "header3.png", "header4.png"];
+
+
+  let fields = [
+    {title: "ANTECEDENTES", subtitle: "Vision del producto o servicio", paragraph: document.getElementById("vision").value},
+    {subtitle: "Misión del producto o servicio:", paragraph: "por completar"},
+    {subtitle: "Correo electronico", paragraph: "jsanchez@gmail.com\njsanchez2@gmail.com"},
+    {subtitle: "RUC o DNI", paragraph: "20507334165\n20600735668"},
+    {subtitle: "Marca comercial o nombre completo", paragraph: "PERULINUX SAC\nPERULINUX NG SAC"},
+    {subtitle: "Producto o servicio", paragraph: "Peru linux"},
+    {title: "PRODUCTOS Y SERVICIOS", subtitle: "Concepto de negocio", paragraph: "Soluciones IT cloud computing."},
+    {subtitle: "Competencia", paragraph: "cloudperu.pe\nosenterprise.com.pe (nube con productos de redhat"},
+    {subtitle: "Valores de marca", paragraph: "Valores: investigadora, experimentada, tecnologica, habil y con vocacion de servicio."},
+    {subtitle: "Oferta de valor", paragraph: "- Equipo tecnico que realiza buena planificacion y realiza un trabajo muy especializado.  - Una de las primeras empresas que brinda soluciones Open Source (2008) - Mentoring a estudiantes que quieren desarrollarse en el campo de las soluciones basadas en linux y software libre."},
+    {subtitle: "Descripcion del producto o servicio", paragraph: "Contamos con divisiones de negocio IT que incluye soluciones IP a traves de asterisk, Soluciones de correo electronico empresarial sobre ZIMBRA, soluciones de seguridad sobre Endian (firewall, proxy, VPN, IDS, antispam, antivirus, traffic shapping), soluciones de documentacion empresarial con Alfresco, almacenamiento de archivos sobre linux, venta de hardware y software en general, networking, soport Linux y mucho mas."},
+    {title: "OBJETIVOS DEL PROYECTO DE BRANDING", subtitle: "Que sabemos de nuestro publico objetivo que nos pueda ayudar?", paragraph: "Que usan motores de busqueda para buscar soluciones, llenan formularios y llaman al telefono que salen en la web, por lo general lo realiza el jefe de sistemas."},
+    {subtitle: "Cual es el objetivo de la comunicacion de este proyecto", paragraph: "Actualizar la plataforma y adquirir una identidad visual y ser una marca escalable en multidispositivos."},
+    {subtitle: "Que es lo que necesito comunicar con mayor prioridad", paragraph: "Actualizar la plataforma y adquirir una identidad visual global y ser una marca escalable en multidispositivos. Actualizar los nuevos beneficios de los prodyctos y servicios y mejorar la experiencia de usuario."},
+    {subtitle: "Cual es el publico objetivo", paragraph: "Pequenas empresas (de 10 a 4000 trabajadores) instituto nacional de salud, jefes de sistemas envia el requerimiento.Jefe de Logistica (Entidades del estado por los temas de corrupcion)"},
+    {subtitle: "Cual es el objetivo de negocio?", paragraph: "Actualizar los beneficios de los servicios y productos\nContar con showroom las 24 horas y armas combos y precontizacion."},
+    {title: "TONO DE COMUNICACION",subtitle: "Que comportamiento deseamos de nuestro publico objetivo como resultado de esta estrategia de comunicacion?", paragraph: "Que organicen sus combos de servicios cloud y puedan descargar sus caracteristicas."},
+    {subtitle: "Cual es el tono y estilo de comunicaion que se ajusta mejor con los objetivos de la marca?", paragraph: "Comunicacion cercana y experimentada."},
+    {subtitle: "Cual es la personalidad de la marca", paragraph: "Nos gusta lo que hacemos, vocacion de servicio y tecnologicos."},
+    {title: "CANALES DE CONTACTO", subtitle: "Referencias personales:", paragraph: "rehat.com"},
+    {subtitle: "Referencias de la competencia directa:", paragraph: "cloudperu.pe\nosenterprise.com.pe"},
+    {subtitle: "Necesitas reportes de tus sitios web:", paragraph: "Si"},
+    {subtitle: "Deseas informacion de registro de marca en indecopi?", paragraph: "Si"},
+    {subtitle: "Cuantas personas estaran dedicadas a la gestion de su marca en el proyecto?", paragraph: "por completar"},
+    {subtitle: "Cuales son los medios tradicionales y digitales que mas consume nuestro publico objetivo?", paragraph: "redes sociales, compras online, compras fisicas, venta por whatsapp.etc."},
+  ];
+
+
+  // Adding the text:
+  for(field of fields) {
+    doc.setGroupedText(field);
+  }
+
   doc.save("output.pdf");
 }
 
