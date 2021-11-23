@@ -72,9 +72,9 @@ jsPDF.API.setGroupedText = function(texts) {
 
   // evaluating whether the grouped text fits between the margins:
   for(prop in texts) {
+    this.setTextLevel(prop);
     let wrappedText = this.splitTextToSize(texts[prop], maxLineWidth);
     let textHeight  = calcTextHeight(prop, wrappedText.length);
-    let oneLineHeight = textHeight / wrappedText.length;
 
     // if it's the first line, don't add the space:
     if(tmpPointer != initialPos)
